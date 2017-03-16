@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import orderBy from 'lodash/orderBy';
 
 import girlsFirstNames from './data/girls-first-names.json';
 import girlsMiddleNames from './data/girls-middle-names.json';
@@ -21,8 +22,14 @@ const TYPE_VALUES = ['First', 'Middle'];
 
 const data = {
   Both: {
-    First: boysFirstNames.concat(girlsFirstNames),
-    Middle: boysMiddleNames.concat(girlsMiddleNames),
+    First: orderBy(
+      boysFirstNames.concat(girlsFirstNames),
+      ({ total }) => total,
+    ),
+    Middle: orderBy(
+      boysMiddleNames.concat(girlsMiddleNames),
+      ({ total }) => total,
+    ),
   },
   Boys: {
     First: boysFirstNames,
@@ -39,6 +46,7 @@ export default class App extends React.Component {
     gender: 'Both',
     type: 'First',
     name: null,
+    rank: null,
     showSettings: false,
     minimumRank: 1000,
   };
@@ -51,7 +59,7 @@ export default class App extends React.Component {
     const index = Math.floor(
       Math.random() * Math.min(this.state.minimumRank, names.length),
     );
-    this.setState({ name: names[index].name });
+    this.setState({ name: names[index].name, rank: index + 1 });
   };
 
   handleSettingsToggle = () => {
@@ -69,6 +77,7 @@ export default class App extends React.Component {
           <Text style={styles.name}>
             {this.state.name}
           </Text>
+          {this.state.rank && <Text>{this.state.rank} most popular</Text>}
         </View>
         <View style={styles.buttonContainer}>
           <Button
@@ -135,6 +144,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 45,
+    marginBottom: 45,
   },
   buttonContainer: {
     padding: 30,
